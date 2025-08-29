@@ -1,5 +1,8 @@
 import type { Handler } from "@netlify/functions";
-import { sql } from "./db"; // you already have this
+import { sql } from "./db";
+
+// GET  /.netlify/functions/notes       → list latest notes
+// POST /.netlify/functions/notes       → { message: string } to create
 
 export const handler: Handler = async (event) => {
   try {
@@ -10,17 +13,25 @@ export const handler: Handler = async (event) => {
         insert into notes (message) values (${message})
         returning id, message, created_at
       `;
-      return { statusCode: 201, body: JSON.stringify(row) };
+      return {
+        statusCode: 201,
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify(row),
+      };
     }
 
-    // GET: list latest 20
+    // default: GET
     const rows = await sql/*sql*/`
       select id, message, created_at
       from notes
       order by created_at desc
-      limit 20
+      limit 50
     `;
-    return { statusCode: 200, body: JSON.stringify(rows) };
+    return {
+      statusCode: 200,
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(rows),
+    };
   } catch (e: any) {
     return { statusCode: 500, body: e?.message ?? "error" };
   }
