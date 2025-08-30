@@ -1,8 +1,27 @@
 [build]
   command = "npm run build"
   publish = "dist"
-  functions = "netlify/functions"
 
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
+
+# 1) Make sure function calls never get rewritten to /index.html
+[[redirects]]
+  from = "/.netlify/functions/*"
+  to = "/.netlify/functions/:splat"
+  status = 200
+  force = true
+
+# (Optional) Alias /api/* -> /.netlify/functions/*
+# so you can call /api/pco-status etc if you want
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/:splat"
+  status = 200
+  force = true
+
+# 2) SPA fallback for everything else
 [[redirects]]
   from = "/*"
   to = "/index.html"
