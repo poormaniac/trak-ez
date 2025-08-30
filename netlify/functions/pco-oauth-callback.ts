@@ -58,7 +58,8 @@ export const handler: Handler = async (event) => {
     // simple success page
     return {
       statusCode: 200,
-      headers: { "content-type": "text/html" },
+      headers: { "content-type": "text/html; charset=utf-8" },
+
       body:
         `<h1>Connected to Planning Center ✅</h1>` +
         `<p>You can close this tab and return to TrakEZ.</p>`,
